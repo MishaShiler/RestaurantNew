@@ -10,5 +10,6 @@
         public DateTime Created { get; set; }
         public int? CustomerId { get; set; }
         public int? EmployeeId { get; set; }
+        public List<Customer_UserRole> UsersRoles { get; set; }
     }
 }

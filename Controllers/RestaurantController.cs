@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Restaurant.DbModels;
+using Restaurant.Dto.RestaurantDto;
+using Restaurant.Filters;
 using System.Data.Common;
+using System.Security.Claims;
 
 namespace Restaurant.Controllers
 
@@ -12,10 +16,6 @@ namespace Restaurant.Controllers
     [ApiController]
     public class RestaurantController : ControllerBase
 
-
-
-
-    
     {
         private readonly RestaurantContext _context;
                 public RestaurantController(RestaurantContext context)
@@ -42,29 +42,30 @@ namespace Restaurant.Controllers
             return _restaurant;
         }
 
-        
-        [HttpPost]
-        public ActionResult<List<string>> Post(Restaurant.DbModels.Restaurant restaurant)
-        {
-           _context.Restaurants.Add(restaurant);
-
-
-            _context.SaveChanges();
-            return Ok(restaurant);
-
-        }
 
         //[Route("Add")]
         //[HttpPost]
-        //public ActionResult<List<string>> Post(string restaurant)
+        //public ActionResult<List<string>> Post(DbModels.Restaurant restaurant)
+        //{
+        //    _context.Restaurants.Add(restaurant);
+
+        //    _context.SaveChanges();
+        //    return Ok(restaurant);
+
+        //}
+
+
+
+
+        //[Route("Add")]
+        //[HttpPost]
+        //public ActionResult<List<string>> Post(DbModels.Restaurant restaurant)
         //{
         //    if (restaurant != null)
         //    {
-
-        //        RestaurantContext db = new RestaurantContext();
-        //        _restaurant.Add(restaurant);
-
-        //        db.SaveChanges();
+        //        _context.Restaurants.Add(restaurant);
+        //        _context.SaveChanges();
+        //        return Ok(restaurant);
 
         //    }
         //    var restaurants = restaurant.ToList();

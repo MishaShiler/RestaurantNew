@@ -13,4 +13,6 @@ public partial class Restaurant
 
     public string PhoneNumber { get; set; } = null!;
     public object Username { get; internal set; }
+
+    
 }

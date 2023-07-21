@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Restaurant.DbModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace Restaurant.Controllers
         private readonly IConfiguration _config;
         private readonly RestaurantContext _context;
 
-        public IConfiguration Config => _config;
+        //public IConfiguration Config => _config;
 
         public AuthController(IAuthService authService, IConfiguration config, RestaurantContext context)
         {
@@ -29,7 +30,7 @@ namespace Restaurant.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto, int roleId)
         {
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
@@ -40,13 +41,14 @@ namespace Restaurant.Controllers
 
 
 
-            //List<Customer_UserRole> roles = new List<Customer_UserRole>();
-            //roles.Add(
-            //    new Customer_UserRole()
-            //    {
-            //        RoleId = roleId
-            //    }
-            //    );
+            List<Customer_UserRole> roles = new List<Customer_UserRole>();
+            //int roleId = 0;
+            roles.Add(
+                new Customer_UserRole()
+                {
+                    RoleId = roleId
+                }
+                ) ;
 
             Customer_User userToCreate = new()
             {
@@ -54,7 +56,7 @@ namespace Restaurant.Controllers
                 Username = userForRegisterDto.Username,
                 Email = userForRegisterDto.Email,
                 Created = DateTime.Now,
-
+                UsersRoles = roles
             };
 
 
@@ -80,23 +82,23 @@ namespace Restaurant.Controllers
             if (userFromRepo == null)
                 return Unauthorized();
 
-            //var claims = new[]
-            //{
-            //    new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-            //    new Claim(ClaimTypes.Name, userFromRepo.Username)
-            //};
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
+                new Claim(ClaimTypes.Name, userFromRepo.Username)
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            var tokenDescriptor = new SecurityTokenDescriptor();
-            //{
-            //    Subject = new ClaimsIdentity(claims),
-            //    //Expires = DateTime.Now.AddDays(1), 
-            //    Expires = DateTime.Now.AddMinutes(20),
-            //    SigningCredentials = creds
-            //};
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                //Expires = DateTime.Now.AddDays(1), 
+                Expires = DateTime.Now.AddMinutes(30),
+                SigningCredentials = creds
+            };
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
